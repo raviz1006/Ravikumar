@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saathi AI | Voice-First SIR 2026 Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tiro+Kannada:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: radial-gradient(circle at 10% 10%, #0B192C 0%, #030712 100%);
+      --surface: rgba(17, 24, 39, 0.85);
+      --surface-border: rgba(255, 255, 255, 0.12);
+      --surface-card: rgba(30, 41, 59, 0.75);
+      --primary: #3B82F6;
+      --primary-glow: rgba(59, 130, 246, 0.4);
+      --saffron: #FF6B35;
+      --saffron-glow: rgba(255, 107, 53, 0.45);
+      --emerald: #10B981;
+      --danger: #EF4444;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --font-scale: 1;
+    }
+
+    body.high-contrast {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface-border: #FFFF00;
+      --surface-card: #141414;
+      --primary: #FFEB3B;
+      --saffron: #FF9900;
+      --emerald: #00FF66;
+      --danger: #FF3333;
+      --text: #FFFFFF;
+      --text-muted: #FFFF00;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); font-size: calc(16px * var(--font-scale)); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    .kannada-text { font-family: 'Tiro Kannada', serif; }
+
+    /* Top ECI SIR 2026 Announcement Bar */
+    .eci-ticker {
+      background: linear-gradient(90deg, #FF6B35 0%, #0B192C 50%, #10B981 100%);
+      padding: 3px 0;
+    }
+    .ticker-inner {
+      background: #0B192C;
+      text-align: center;
+      padding: 7px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: white;
+    }
+    .ticker-badge {
+      background: #FF6B35;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    /* Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 19, 43, 0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 12px 24px;
+    }
+    .nav-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #FF6B35 0%, #3B82F6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px var(--saffron-glow);
+    }
+    .brand-info h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-info h1 span.gradient-name {
+      background: linear-gradient(90deg, #FF8A50 0%, #60A5FA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .tag-pill {
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93C5FD;
+      padding: 2px 8px;
+      border-radius: 14px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .pill-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    /* Main Grid */
+    .main-grid {
+      max-width: 1440px;
+      width: 100%;
+      margin: 16px auto;
+      padding: 0 20px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 290px 1.4fr 430px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1240px) {
+      .main-grid { grid-template-columns: 260px 1fr; }
+      .right-form-panel { display: none; }
+    }
+    @media (max-width: 860px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .left-nav-panel { display: none; }
+    }
+
+    .glass-box {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 18px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    /* =========================================================================
+       COLUMN 1: THE AI NAVIGATOR
+       ========================================================================= */
+    .left-nav-panel {
+      padding: 18px 14px;
+      position: sticky;
+      top: 86px;
+    }
+    .nav-title {
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .radial-status-box {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .radial-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: conic-gradient(#FF6B35 0% 20%, rgba(255,255,255,0.1) 20% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radial-inside {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #0B192C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #FF8A50;
+    }
+    .ef-steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ef-step-item {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ef-step-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .ef-step-item.active {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0.05) 100%);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    }
+    .ef-step-item.completed { border-left: 3px solid #10B981; }
+    .step-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2px;
+    }
+    .part-tag { font-size: 0.68rem; font-weight: 800; color: #60A5FA; text-transform: uppercase; }
+    .part-status { font-size: 0.65rem; padding: 1px 6px; border-radius: 8px; font-weight: 700; }
+    .status-done { background: rgba(16, 185, 129, 0.2); color: #34D399; }
+    .status-act { background: rgba(59, 130, 246, 0.2); color: #93C5FD; }
+    .status-skip { background: rgba(255, 107, 53, 0.2); color: #FB923C; }
+    .step-main-title { font-size: 0.84rem; font-weight: 700; color: var(--text); }
+    .step-sub-title { font-size: 0.7rem; color: var(--text-muted); }
+
+    .official-rule-callout {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 107, 53, 0.08);
+      border: 1px dashed rgba(255, 107, 53, 0.3);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #FFB38A;
+    }
+
+    /* =========================================================================
+       COLUMN 2: THE AI CHATBOT (SAATHI AI)
+       ========================================================================= */
+    .center-chat-panel {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+      position: relative;
+    }
+    .chat-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--surface-border);
+      background: rgba(15, 23, 42, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .agent-status-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    /* Glowing Animated Voice Orb */
+    .voice-orb-glow {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FF8A50 0%, #3B82F6 70%);
+      box-shadow: 0 0 20px #3B82F6, 0 0 35px #FF8A50;
+      animation: pulseOrb 3s infinite ease-in-out;
+      cursor: pointer;
+    }
+    .voice-orb-glow.speaking {
+      animation: speakOrb 0.8s infinite alternate ease-in-out;
+      box-shadow: 0 0 35px #10B981, 0 0 50px #3B82F6;
+      background: radial-gradient(circle, #34D399 0%, #3B82F6 80%);
+    }
+    .voice-orb-glow.listening {
+      animation: micPulse 0.9s infinite alternate ease-in-out;
+      box-shadow: 0 0 40px #EF4444, 0 0 60px #EF4444;
+      background: radial-gradient(circle, #F87171 0%, #DC2626 80%);
+    }
+    @keyframes pulseOrb {
+      0%, 100% { transform: scale(0.92); opacity: 0.85; }
+      50% { transform: scale(1.08); opacity: 1; filter: hue-rotate(40deg); }
+    }
+    @keyframes speakOrb {
+      0% { transform: scale(0.92); }
+      100% { transform: scale(1.25); }
+    }
+    @keyframes micPulse {
+      0% { transform: scale(0.95); }
+      100% { transform: scale(1.3); }
+    }
+
+    /* Active Voice Banner (Shows real-time microphone listening state) */
+    .voice-status-banner {
+      background: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+    }
+    .mic-indicator-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10B981;
+      display: inline-block;
+      margin-right: 6px;
+      box-shadow: 0 0 8px #10B981;
+    }
+    .mic-indicator-dot.active {
+      background: #EF4444;
+      box-shadow: 0 0 12px #EF4444;
+      animation: blink 0.8s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* Validation Rejection Alert Banner */
+    .relevance-warning-banner {
+      display: none;
+      background: rgba(239, 68, 68, 0.15);
+      border-left: 4px solid #EF4444;
+      padding: 10px 16px;
+      margin: 10px 18px 0 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #FCA5A5;
+      animation: slideDown 0.25s ease;
+    }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Chat Messages Stream */
+    .chat-stream-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scroll-behavior: smooth;
+    }
+    .chat-stream-box::-webkit-scrollbar { width: 6px; }
+    .chat-stream-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 8px; }
+
+    .chat-row {
+      display: flex;
+      gap: 12px;
+      max-width: 90%;
+      animation: fadeInMsg 0.3s ease forwards;
+    }
+    @keyframes fadeInMsg { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .chat-row.ai { align-self: flex-start; }
+    .chat-row.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .avatar-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .ai .avatar-icon {
+      background: linear-gradient(135deg, #FF6B35 0%, #3B82F6 100%);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .user .avatar-icon {
+      background: #1E293B;
+      border: 1px solid var(--surface-border);
+    }
+    .msg-card {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .ai .msg-card {
+      border-top-left-radius: 4px;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border-color: rgba(59, 130, 246, 0.25);
+    }
+    .user .msg-card {
+      border-top-right-radius: 4px;
+      background: linear-gradient(145deg, #2563EB 0%, #1D4ED8 100%);
+      color: white;
+    }
+    .msg-content { font-size: 1.02rem; line-height: 1.55; font-weight: 500; }
+    .msg-vernacular { font-size: 1.1rem; color: #FF8A50; margin-top: 6px; line-height: 1.5; }
+    .user .msg-vernacular { color: #FEF08A; }
+
+    /* Expandable Thought & Graph Pill */
+    .thought-pill {
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      border: 1px dashed rgba(59, 130, 246, 0.3);
+      font-size: 0.75rem;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .thought-details {
+      display: none;
+      margin-top: 6px;
+      padding: 8px;
+      background: #020617;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      color: #CBD5E1;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.4;
+    }
+    .thought-details.open { display: block; }
+
+    .msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-action-small {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-action-small:hover { background: rgba(255, 255, 255, 0.14); color: white; }
+
+    /* Quick Reply Suggestion Chips */
+    .chip-wrap {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .quick-chip {
+      background: rgba(255, 107, 53, 0.12);
+      border: 1px solid rgba(255, 107, 53, 0.35);
+      color: #FFB38A;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-chip:hover {
+      background: var(--saffron);
+      color: white;
+      transform: translateY(-1px);
+    }
+    .quick-chip.unrelated-test {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #FCA5A5;
+    }
+    .quick-chip.unrelated-test:hover {
+      background: #EF4444;
+      color: white;
+    }
+
+    /* Floating Bottom Mic & Input Bar */
+    .dock-area {
+      padding: 14px 18px;
+      background: rgba(11, 19, 43, 0.95);
+      border-top: 1px solid var(--surface-border);
+      backdrop-filter: blur(20px);
+    }
+    .dock-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mic-button-big {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B35 0%, #E11D48 100%);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px var(--saffron-glow);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .mic-button-big:hover { transform: scale(1.06); }
+    .mic-button-big.listening {
+      background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%);
+      animation: micWave 1.2s infinite;
+    }
+    @keyframes micWave {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 0 0 12px rgba(239, 68, 68, 0.3); }
+      100% { box-shadow: 0 0 0 24px rgba(239, 68, 68, 0), 0 0 0 36px rgba(239, 68, 68, 0); }
+    }
+    .dock-input {
+      flex: 1;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      border-radius: 24px;
+      padding: 0 18px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .dock-input:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 14px var(--primary-glow);
+    }
+    .btn-send {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #3B82F6;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =========================================================================
+       COLUMN 3: LIVE OFFICIAL ENUMERATION FORM (EF) 2026 PREVIEW
+       ========================================================================= */
+    .right-form-panel {
+      padding: 16px;
+      position: sticky;
+      top: 86px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+    }
+    .right-form-panel::-webkit-scrollbar { width: 5px; }
+    .right-form-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 6px; }
+
+    .form-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .form-panel-header h3 {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #93C5FD;
+      text-transform: uppercase;
+    }
+
+    /* Authentic Document Styling */
+    .official-ef-document {
+      background: #FFFFFF;
+      color: #111827;
+      border: 2px solid #000000;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.72rem;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+      line-height: 1.35;
+    }
+    .ef-doc-title {
+      text-align: center;
+      border-bottom: 2px solid #000000;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .ef-doc-title h4 { font-size: 0.88rem; font-weight: 800; color: #000000; }
+    .ef-doc-title small { font-weight: 700; color: #4B5563; }
+    .ef-sub-banner {
+      background: #EFF6FF;
+      border: 1px solid #3B82F6;
+      padding: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #1E40AF;
+      text-align: center;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+
+    .part1-box {
+      border: 1px solid #9CA3AF;
+      padding: 6px;
+      margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 1fr 65px;
+      gap: 6px;
+      background: #F9FAFB;
+    }
+    .part1-photo-zone {
+      border: 1px dashed #6B7280;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      text-align: center;
+      padding: 4px;
+      background: #FFFFFF;
+    }
+
+    .parts-split-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .part2-column {
+      border: 1px solid #9CA3AF;
+      padding: 6px;
+      background: #FDFEFE;
+    }
+    .part-col-header {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #1F2937;
+      border-bottom: 1px solid #D1D5DB;
+      padding-bottom: 2px;
+      margin-bottom: 4px;
+    }
+    .field-pair { margin-bottom: 4px; }
+    .field-pair label { font-size: 0.6rem; color: #4B5563; display: block; }
+    .field-pair strong { font-size: 0.68rem; color: #111827; word-break: break-word; }
+
+    .part3-box {
+      border: 1px solid #9CA3AF;
+      padding: 6px;
+      background: #F9FAFB;
+      margin-bottom: 8px;
+    }
+    .part3-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62rem;
+    }
+    .part3-table td { border: 1px solid #D1D5DB; padding: 3px 5px; }
+    .part3-table td.col-head { background: #F3F4F6; font-weight: 700; width: 45%; }
+
+    .signature-row {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 6px;
+      border-top: 1px solid #000000;
+      padding-top: 6px;
+      font-size: 0.6rem;
+    }
+    .sig-box {
+      border: 1px dashed #6B7280;
+      padding: 4px;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      text-align: center;
+      background: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Announcement -->
+  <div class="eci-ticker">
+    <div class="ticker-inner">
+      <span class="ticker-badge">Special Intensive Revision 2026</span>
+      <span>BLO House Visits: <strong>30th June to 08th August 2026</strong> &bull; Helpline: <strong>1950 / 1800 22 1950</strong> &bull; Zero Online Payment (ECI services are 100% Free)</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="nav-container">
+      <div class="brand-wrap">
+        <div class="brand-logo">🇮🇳</div>
+        <div class="brand-info">
+          <h1>Saathi <span class="gradient-name">AI</span> <span class="tag-pill">Smart Voice Relevancy &bull; Indic Multi-Speech</span></h1>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="pill-btn active" id="langKnBtn" onclick="switchLanguage('kn')">ಕನ್ನಡ</button>
+        <button class="pill-btn" id="langEnBtn" onclick="switchLanguage('en')">English</button>
+        <button class="pill-btn" id="langHiBtn" onclick="switchLanguage('hi')">हिन्दी</button>
+        <span style="width:1px; height:22px; background:var(--surface-border); margin:0 4px;"></span>
+        <button class="pill-btn" onclick="toggleContrast()">🌓 Contrast</button>
+        <button class="pill-btn" onclick="openModal('graphModal')">🧠 Neo4j Graph</button>
+        <button class="pill-btn" onclick="openModal('bloModal')">👮‍♂️ BLO Queue</button>
+        <button class="pill-btn" onclick="openModal('leafletModal')">📄 View Leaflet</button>
+        <button class="pill-btn" onclick="openModal('pitchModal')">ℹ️ Pitch & Trust</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- =========================================================================
+         COLUMN 1: THE AI NAVIGATOR
+         ========================================================================= -->
+    <aside class="glass-box left-nav-panel">
+      <div class="nav-title">
+        <span>🧭 AI Navigator</span>
+        <span class="tag-pill" id="navStagePill">Step 1/5</span>
+      </div>
+
+      <!-- Completion Indicator -->
+      <div class="radial-status-box">
+        <div class="radial-circle" id="radialIndicator">
+          <div class="radial-inside" id="radialPercent">20%</div>
+        </div>
+        <div>
+          <div style="font-size:0.82rem; font-weight:800;" id="navFormTitle">Enumeration Form (EF)</div>
+          <div style="font-size:0.7rem; color:#34D399;" id="navActivePartLabel">Active: PART 1 Elector Info</div>
+        </div>
+      </div>
+
+      <!-- Stepper List -->
+      <ul class="ef-steps-list">
+        <li class="ef-step-item active" id="navStep_1" onclick="jumpTo(1)">
+          <div class="step-badge-row">
+            <span class="part-tag">PART 1</span>
+            <span class="part-status status-act" id="status_1">Active</span>
+          </div>
+          <div class="step-main-title">Elector Identification & Photo</div>
+          <div class="step-sub-title kannada-text">ಮತದಾರರ ಹೆಸರು ಮತ್ತು ಭಾವಚಿತ್ರ</div>
+        </li>
+
+        <li class="ef-step-item" id="navStep_2" onclick="jumpTo(2)">
+          <div class="step-badge-row">
+            <span class="part-tag">PART 2A</span>
+            <span class="part-status" id="status_2">Pending</span>
+          </div>
+          <div class="step-main-title">Elector's Previous SIR Details</div>
+          <div class="step-sub-title kannada-text">ಹಿಂದಿನ ಮತದಾರರ ಪಟ್ಟಿ / EPIC ಸಂಖ್ಯೆ</div>
+        </li>
+
+        <li class="ef-step-item" id="navStep_3" onclick="jumpTo(3)">
+          <div class="step-badge-row">
+            <span class="part-tag">PART 2B</span>
+            <span class="part-status status-skip" id="status_3">Safeguard</span>
+          </div>
+          <div class="step-main-title">Parent/Grandparent Previous SIR</div>
+          <div class="step-sub-title kannada-text">ಪೋಷಕರ ಹಿಂದಿನ SIR ವಿವರ (If own not found)</div>
+        </li>
+
+        <li class="ef-step-item" id="navStep_4" onclick="jumpTo(4)">
+          <div class="step-badge-row">
+            <span class="part-tag">PART 3</span>
+            <span class="part-status" id="status_4">Pending</span>
+          </div>
+          <div class="step-main-title">Elector's Family Details & Proofs</div>
+          <div class="step-sub-title kannada-text">DOB, ಮೊಬೈಲ್ & ಕುಟುಂಬದ EPIC</div>
+        </li>
+
+        <li class="ef-step-item" id="navStep_5" onclick="jumpTo(5)">
+          <div class="step-badge-row">
+            <span class="part-tag">FINAL</span>
+            <span class="part-status" id="status_5">Review</span>
+          </div>
+          <div class="step-main-title">Read-Back & Confirmation</div>
+          <div class="step-sub-title kannada-text">ಮನೆ ಬಾಗಿಲಿಗೆ BLO ಭೇಟಿಗಾಗಿ ಸಿದ್ಧತೆ</div>
+        </li>
+      </ul>
+
+      <!-- Leaflet Rule -->
+      <div class="official-rule-callout">
+        <strong>📜 Official ECI Leaflet Rule:</strong><br>
+        <em>"If details not found in previous SIR, only Part 3 may be filled and submitted to the BLO with prescribed documents."</em>
+      </div>
+    </aside>
+
+
+    <!-- =========================================================================
+         COLUMN 2: THE AI CHATBOT (SAATHI AI)
+         ========================================================================= -->
+    <main class="glass-box center-chat-panel">
+      
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="agent-status-wrap">
+          <div class="voice-orb-glow" id="voiceOrb" onclick="speakCurrentQuestion()"></div>
+          <div>
+            <div style="font-size:0.95rem; font-weight:800;">Saathi AI <span style="color:#60A5FA;">(ಧ್ವನಿ ಸಾರಥಿ)</span></div>
+            <div style="font-size:0.75rem; color:#34D399;" id="aiStatusText">● Listening & Ready for Spoken Voice</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:6px;">
+          <button class="pill-btn" onclick="speakCurrentQuestion()">🔊 Repeat Aloud</button>
+          <button class="pill-btn" onclick="explainWhyThisField()">💡 Why this field?</button>
+        </div>
+      </div>
+
+      <!-- Live Voice Listening Status Bar -->
+      <div class="voice-status-banner">
+        <div>
+          <span class="mic-indicator-dot" id="micIndicator"></span>
+          <span id="micFeedbackText">Microphone: Ready (Click mic button to speak in chosen language)</span>
+        </div>
+        <div style="font-family:'JetBrains Mono'; font-size:0.72rem; color:#93C5FD;" id="activeLangCode">
+          Voice: kn-IN (Kannada)
+        </div>
+      </div>
+
+      <!-- Semantic Rejection Alert Banner (When Unrelated Question/Answer is Detected) -->
+      <div class="relevance-warning-banner" id="relevanceBanner">
+        <!-- Injected by JS -->
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="chat-stream-box" id="chatStream">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Dock Area: Voice Mic + Input -->
+      <div class="dock-area">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; overflow-x:auto;">
+          <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">⚡ Quick Simulators:</span>
+          <button class="pill-btn" onclick="runSimulator('lakshmi')" style="font-size:0.75rem; white-space:nowrap;">
+            👵 Lakshmi Devi (Valid Elector)
+          </button>
+          <button class="pill-btn" onclick="runSimulator('unrelated')" style="font-size:0.75rem; white-space:nowrap; border-color:rgba(239,68,68,0.4); color:#FCA5A5;">
+            ⚠️ Test Unrelated Voice ("What is the weather?")
+          </button>
+          <button class="pill-btn" onclick="runSimulator('fallback')" style="font-size:0.75rem; white-space:nowrap; border-color:rgba(255,107,53,0.4);">
+            🛡️ Not in Old SIR &rarr; Part 3 Fallback
+          </button>
+        </div>
+
+        <div class="dock-row">
+          <button class="mic-button-big" id="micBtn" onclick="toggleMic()" title="Click to Speak">🎙️</button>
+          <input 
+            type="text" 
+            class="dock-input" 
+            id="chatInput" 
+            placeholder="Speak into microphone or type answer..."
+            onkeydown="if(event.key==='Enter') sendInput()"
+          />
+          <button class="btn-send" onclick="sendInput()">➔</button>
+        </div>
+      </div>
+
+    </main>
+
+
+    <!-- =========================================================================
+         COLUMN 3: LIVE OFFICIAL ENUMERATION FORM (EF) 2026 PREVIEW
+         ========================================================================= -->
+    <aside class="glass-box right-form-panel">
+      <div class="form-panel-header">
+        <h3>📄 Enumeration Form (EF) Draft</h3>
+        <span class="tag-pill">Special Intensive Revision 2026</span>
+      </div>
+
+      <!-- The Official Form Document -->
+      <div class="official-ef-document" id="printableEFDoc">
+        <div class="ef-doc-title">
+          <div style="font-size:0.75rem; font-weight:800;">भारत निवडणूक आयोग / ELECTION COMMISSION OF INDIA</div>
+          <h4>गणना प्रपत्र / ENUMERATION FORM (EF)</h4>
+          <small>Special Intensive Revision (SIR) of Electoral Rolls 2026</small>
+        </div>
+
+        <div class="ef-sub-banner">
+          BLO House Visits: 30th June to 08th August 2026 &bull; Form Ref: #SIR-2026-89412
+        </div>
+
+        <!-- PART 1: Elector Identification & Photo Box -->
+        <div class="part1-box">
+          <div>
+            <div style="font-weight:800; color:#1E40AF; font-size:0.7rem; margin-bottom:2px;">PART 1 &bull; Elector Details</div>
+            <div>Name of Elector: <strong id="docPart1Name">Lakshmi Devi (ಲಕ್ಷ್ಮಿ ದೇವಿ)</strong></div>
+            <div>AC Name & No: <strong>154 - Malleshwaram</strong></div>
+            <div>Name & Contact of BLO: <strong>Smt. Geetha R. (Ph: 98451-XXXXX)</strong></div>
+            <div>Part No: <strong>42</strong> &bull; Serial No: <strong>189</strong></div>
+          </div>
+          <div class="part1-photo-zone">
+            <span style="font-size:24px;">👵</span>
+            <span>Recent Photo</span>
+          </div>
+        </div>
+
+        <!-- 2-COLUMN SPLIT: PART 2A and PART 2B -->
+        <div class="parts-split-grid">
+          <!-- PART 2A -->
+          <div class="part2-column" id="docPart2ABox">
+            <div class="part-col-header">PART 2A &bull; Elector's Previous SIR</div>
+            <div class="field-pair">
+              <label>Name in Prev SIR:</label>
+              <strong id="docPart2AName">Lakshmi Devi</strong>
+            </div>
+            <div class="field-pair">
+              <label>Previous EPIC No:</label>
+              <strong id="docPart2AEPIC">ABC1234567</strong>
+            </div>
+            <div class="field-pair">
+              <label>Assembly Constituency:</label>
+              <strong id="docPart2AAC">Bengaluru South</strong>
+            </div>
+            <div class="field-pair">
+              <label>District & State:</label>
+              <strong>Bengaluru, Karnataka</strong>
+            </div>
+          </div>
+
+          <!-- PART 2B -->
+          <div class="part2-column" id="docPart2BBox" style="background:#FFFBEB;">
+            <div class="part-col-header">PART 2B &bull; Ancestor Previous SIR</div>
+            <div style="font-size:0.58rem; color:#6B7280; margin-bottom:4px;">(If elector's own details not found)</div>
+            <div class="field-pair">
+              <label>Father/Mother/Grandparent:</label>
+              <strong id="docPart2BAncestor">Narasimhe Gowda (Father)</strong>
+            </div>
+            <div class="field-pair">
+              <label>Ancestor Prev EPIC:</label>
+              <strong id="docPart2BEPIC">XYZ9876543</strong>
+            </div>
+            <div class="field-pair">
+              <label>Status:</label>
+              <strong style="color:#0B7A4C;" id="docPart2BStatus">Linked via Lineage</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- PART 3: Elector's Family Details -->
+        <div class="part3-box">
+          <div style="font-weight:800; color:#1E40AF; font-size:0.7rem; margin-bottom:4px;">
+            PART 3 &bull; Elector's Family Details & Proofs
+          </div>
+          <table class="part3-table">
+            <tr>
+              <td class="col-head">Date of Birth / Age</td>
+              <td id="docPart3DOB"><strong>15/08/1954 (Age: 72 yrs &bull; Senior)</strong></td>
+            </tr>
+            <tr>
+              <td class="col-head">Aadhaar (Optional)</td>
+              <td><strong>XXXX-XXXX-4512 (Self-declared)</strong></td>
+            </tr>
+            <tr>
+              <td class="col-head">Mobile Number</td>
+              <td id="docPart3Mobile"><strong>9845012345</strong></td>
+            </tr>
+            <tr>
+              <td class="col-head">Father / Guardian Name & EPIC</td>
+              <td id="docPart3Father"><strong>Narasimhe Gowda</strong></td>
+            </tr>
+            <tr>
+              <td class="col-head">Mother Name & EPIC</td>
+              <td><strong>Late Kamalamma</strong></td>
+            </tr>
+            <tr>
+              <td class="col-head">Spouse Name & EPIC</td>
+              <td id="docPart3Spouse"><strong>Late Ramaswamy</strong></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Declaration & Signature Row -->
+        <div class="signature-row">
+          <div>
+            <div><strong>Declaration:</strong> I hereby declare that all entries are true.</div>
+            <div style="margin-top:2px;">Date: <strong>17/10/2026</strong></div>
+            <div style="font-size:0.55rem; color:#6B7280; margin-top:2px;">Keep 1 copy with yourself, 1 copy to BLO.</div>
+          </div>
+          <div class="sig-box">
+            <div style="font-family:'Tiro Kannada'; color:#1E40AF; font-size:0.85rem;" id="docSignature">ಲಕ್ಷ್ಮಿ ದೇವಿ</div>
+            <div>Signature of Elector / Adult Family Member</div>
+          </div>
+        </div>
+
+        <div style="margin-top:6px; font-size:0.58rem; color:#6B7280; text-align:center;">
+          "No eligible voter will be left out, no ineligible person will be included" &bull; <strong>Helpline: 1950</strong>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex; gap:8px;">
+        <button class="pill-btn" onclick="speakDraftAloud()" style="flex:1; justify-content:center; background:#10B981; color:white; border:none;">
+          📢 Read Aloud (ಧ್ವನಿ ಓದು)
+        </button>
+        <button class="pill-btn" onclick="window.print()" style="flex:1; justify-content:center;">
+          🖨️ Print EF Form
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+
+  <!-- =========================================================================
+       JAVASCRIPT ARCHITECTURE WITH INTELLIGENT RELEVANCY VALIDATION
+       & ACCURATE MULTILINGUAL VOICE SYNTHESIS
+       ========================================================================= -->
+  <script>
+    const AppState = {
+      lang: 'kn', // 'kn' | 'en' | 'hi'
+      step: 1,
+      isListening: false,
+      recognition: null,
+      availableVoices: [],
+      draft: {
+        name: "Lakshmi Devi",
+        ac: "154 - Malleshwaram",
+        prev_epic: "ABC1234567",
+        prev_ac: "Bengaluru South",
+        ancestor_name: "Narasimhe Gowda (Father)",
+        ancestor_epic: "XYZ9876543",
+        dob: "15/08/1954 (Age: 72)",
+        mobile: "9845012345",
+        relation: "Late Ramaswamy (Husband)"
+      }
+    };
+
+    // Conversational Form Steps with Multilingual Definitions & Relevancy Rules
+    const STEPS_DATA = [
+      {
+        id: 1,
+        part: "PART 1: Elector Identification",
+        field_name: "Citizen Full Name",
+        prompt: {
+          kn: "ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ಸಾಥಿ ಎಐ. ನಿಮ್ಮ SIR 2026 ಗಣನಾ ಪ್ರಪತ್ರವನ್ನು ಭರ್ತಿ ಮಾಡಲು ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ತಿಳಿಸಿ.",
+          en: "Namaskara! I am Saathi AI. To complete your SIR 2026 Enumeration Form, please speak your full name as in your ID proof.",
+          hi: "नमस्ते! मैं आपका साथी एआई हूँ। कृपया पहचान पत्र के अनुसार अपना पूरा नाम बताएं।"
+        },
+        why: {
+          kn: "ಭಾಗ 1: ಮತದಾರರ ಪಟ್ಟಿಯಲ್ಲಿ ಗುರುತು ದೃಢೀಕರಿಸಲು ಪೂರ್ಣ ಹೆಸರು ಅಗತ್ಯವಾಗಿದೆ.",
+          en: "PART 1: Full name is required to establish identification in the electoral roll.",
+          hi: "भाग 1: मतदाता सूची में पहचान स्थापित करने के लिए पूरा नाम आवश्यक है।"
+        },
+        suggestions: {
+          kn: ["ಲಕ್ಷ್ಮಿ ದೇವಿ (Lakshmi Devi)", "ರಮೇಶ್ ಗೌಡ (Ramesh Gowda)", "ಆನಂದ್ ಕುಮಾರ್"],
+          en: ["Lakshmi Devi", "Ramesh Gowda", "Anand Kumar"],
+          hi: ["लक्ष्मी देवी", "रमेश गौड़ा", "आनंद कुमार"]
+        },
+        // Relevancy Validator for Step 1 (Name)
+        validate: (input) => {
+          const t = input.trim().toLowerCase();
+          // Reject if purely numbers or age or mobile or irrelevant greeting/questions
+          if (/^\d+$/.test(t)) {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಇದು ಕೇವಲ ಸಂಖ್ಯೆಯಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ತಿಳಿಸಿ (ಉದಾಹರಣೆಗೆ: ಲಕ್ಷ್ಮಿ ದೇವಿ).",
+                en: "You provided numbers. Please speak your full name (for example: Lakshmi Devi).",
+                hi: "यह केवल संख्या है। कृपया अपना पूरा नाम बताएं।"
+              }
+            };
+          }
+          if (t.includes("weather") || t.includes("time") || t.includes("pizza") || t.includes("hello") && t.split(' ').length < 2 || t === "yes" || t === "no" || t === "ಹೌದು" || t === "ಇಲ್ಲ") {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಕ್ಷಮಿಸಿ, ಇದು ಮತದಾರರ ಹೆಸರಿನಂತೆ ಕಾಣುತ್ತಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಗುರುತಿನ ಚೀಟಿಯಲ್ಲಿರುವ ಹೆಸರನ್ನು ಹೇಳಿ.",
+                en: "That does not sound like a person's name. Please provide your full name as used in official documents.",
+                hi: "यह व्यक्ति का नाम नहीं लगता है। कृपया पहचान पत्र के अनुसार अपना नाम बताएं।"
+              }
+            };
+          }
+          if (t.length < 2) {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಹೆಸರು ತುಂಬಾ ಚಿಕ್ಕದಾಗಿದೆ. ದಯವಿಟ್ಟು ಸ್ಪಷ್ಟವಾಗಿ ಪೂರ್ಣ ಹೆಸರನ್ನು ಹೇಳಿ.",
+                en: "The name is too short. Please speak your full name clearly.",
+                hi: "नाम बहुत छोटा है। कृपया अपना पूरा नाम स्पष्ट रूप से बताएं।"
+              }
+            };
+          }
+          return { valid: true };
+        }
+      },
+      {
+        id: 2,
+        part: "PART 2A: Elector's Previous SIR Details",
+        field_name: "Previous Roll / EPIC Status",
+        prompt: {
+          kn: "ಭಾಗ 2A: ನೀವು ಈ ಹಿಂದೆ ಬೇರೆ ಊರಿನ ಮತದಾರರ ಪಟ್ಟಿಯಲ್ಲಿದ್ದೀರಾ? ನಿಮ್ಮ ಹಳೆಯ ವೋಟರ್ ಕಾರ್ಡ್ (EPIC) ಸಂಖ್ಯೆ ನೆನಪಿದೆಯೇ? ಇಲ್ಲದಿದ್ದರೆ 'ಇಲ್ಲ' ಎಂದು ಹೇಳಿ.",
+          en: "PART 2A: Were you enrolled in the previous SIR? Do you remember your old Voter Card (EPIC) number? If not found, simply say 'No'.",
+          hi: "भाग 2A: क्या आपका नाम पिछली मतदाता सूची में था या पुराना वोटर कार्ड नंबर याद है? यदि नहीं, तो 'नहीं' कहें।"
+        },
+        why: {
+          kn: "ಭಾಗ 2A: ಹಿಂದಿನ ವಿವರ ನೀಡಿದರೆ ಹಳೆಯ ಪಟ್ಟಿಯಿಂದ ಹೆಸರನ್ನು ಸುಲಭವಾಗಿ ವರ್ಗಾಯಿಸಬಹುದು ಮತ್ತು ದ್ವಿಮುಖ ನೋಂದಣಿ ತಡೆಯಬಹುದು.",
+          en: "PART 2A: Providing previous roll details ensures clean migration and prevents illegal dual registration.",
+          hi: "भाग 2A: पिछला विवरण देने से दोहरा नाम दर्ज होने से बचा जा सकता है।"
+        },
+        suggestions: {
+          kn: ["ಹೌದು, ABC1234567 (ಇದೆ)", "ಇಲ್ಲ / ಸಿಕ್ಕಿಲ್ಲ (Not in Old SIR)", "ಗೊತ್ತಿಲ್ಲ / BLO ಸಹಾಯ"],
+          en: ["Yes, ABC1234567 (Have Card)", "No / Not Found in Old SIR", "Unknown / Need BLO Help"],
+          hi: ["हाँ, पुराना कार्ड है", "पुराने रोल में नहीं है", "पता नहीं / सहायता चाहिए"]
+        },
+        validate: (input) => {
+          const t = input.trim().toLowerCase();
+          // Reject if answering about food, weather, or random numbers without context
+          if (t.includes("weather") || t.includes("pizza") || t.includes("who are you") || t.includes("song")) {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಇದು ಸಂಬಂಧವಿಲ್ಲದ ಉತ್ತರವಲ್ಲ. ದಯವಿಟ್ಟು ನೀವು ಹಿಂದಿನ ಮತದಾರರ ಪಟ್ಟಿಯಲ್ಲಿದ್ದೀರಾ ಎಂದು 'ಹೌದು' ಅಥವಾ 'ಇಲ್ಲ' ಎಂದು ತಿಳಿಸಿ.",
+                en: "That is an unrelated response. Please tell whether you were in the previous SIR by saying 'Yes' with your card or 'No'.",
+                hi: "यह असंबंधित उत्तर है। कृपया बताएं कि क्या आपके पास पुराना वोटर कार्ड है या नहीं।"
+              }
+            };
+          }
+          return { valid: true };
+        }
+      },
+      {
+        id: 3,
+        part: "PART 2B: Ancestor Previous SIR (Lineage Linkage)",
+        field_name: "Father / Mother / Grandparent Previous Roll",
+        prompt: {
+          kn: "ಭಾಗ 2B: ನಿಮ್ಮ ಸ್ವಂತ ಹಿಂದಿನ ವಿವರ ಸಿಗದಿದ್ದರೆ, ನಿಮ್ಮ ತಂದೆ, ತಾಯಿ ಅಥವಾ ಅಜ್ಜ-ಅಜ್ಜಿಯರ ಹಳೆಯ ವೋಟರ್ ವಿವರ ಇದೆಯೇ? ಇಲ್ಲದಿದ್ದರೆ 'ಲಭ್ಯವಿಲ್ಲ' ಎಂದು ಹೇಳಿ.",
+          en: "PART 2B: If your own previous SIR is not found, do you have your Father's, Mother's, or Grandparent's previous voter details? If none, say 'Not available'.",
+          hi: "भाग 2B: यदि आपका पिछला रिकॉर्ड नहीं है, तो क्या आपके माता-पिता या दादा-दादी का पुराना वोटर विवरण है? यदि नहीं, तो 'उपलब्ध नहीं' कहें।"
+        },
+        why: {
+          kn: "ಅಧಿಕೃತ ಮಾರ್ಗಸೂಚಿ: ಪೋಷಕರ ವಿವರ ಸಿಗದಿದ್ದರೆ ನಾವು ಊಹಿಸುವುದಿಲ್ಲ; ನೇರವಾಗಿ ಭಾಗ 3ಕ್ಕೆ ಹೋಗುತ್ತೇವೆ.",
+          en: "Official Leaflet Rule: If not found in previous SIR, only Part 3 is filled. We NEVER guess!",
+          hi: "यदि पिछला रिकॉर्ड नहीं है तो केवल भाग 3 भरा जाता है। हम अनुमान नहीं लगाते।"
+        },
+        suggestions: {
+          kn: ["ನರಸಿಂಹೇ ಗೌಡ (ತಂದೆ) XYZ9876543", "ಲಭ್ಯವಿಲ್ಲ &rarr; ಭಾಗ 3ಕ್ಕೆ ತೆರಳಿ", "ತಿಳಿದಿಲ್ಲ"],
+          en: ["Narasimhe Gowda (Father) XYZ9876543", "Not Available &rarr; Fill Part 3 Only", "Skip to Part 3"],
+          hi: ["पिता का विवरण है", "उपलब्ध नहीं &rarr; भाग 3 भरें", "छोड़ें"]
+        },
+        validate: (input) => {
+          const t = input.trim().toLowerCase();
+          if (t.includes("weather") || t.includes("hello") || t.includes("how are you")) {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಕ್ಷಮಿಸಿ, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೋಷಕರ ಹಳೆಯ ವಿವರ ಇದೆಯೇ ಎಂದು ತಿಳಿಸಿ ಅಥವಾ 'ಲಭ್ಯವಿಲ್ಲ' ಎಂದು ಹೇಳಿ.",
+                en: "Please answer if you have your ancestor's previous roll details or say 'Not available'.",
+                hi: "कृपया बताएं कि क्या पूर्वजों का पुराना विवरण है या 'उपलब्ध नहीं' कहें।"
+              }
+            };
+          }
+          return { valid: true };
+        }
+      },
+      {
+        id: 4,
+        part: "PART 3: Elector's Family Details & Proofs",
+        field_name: "DOB, Mobile & Family Details",
+        prompt: {
+          kn: "ಭಾಗ 3: ದಯವಿಟ್ಟು ನಿಮ್ಮ ಹುಟ್ಟಿದ ದಿನಾಂಕ ಅಥವಾ ವಯಸ್ಸು, ಮತ್ತು ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ತಿಳಿಸಿ (ಉದಾ: 72 ವರ್ಷ, 9845012345).",
+          en: "PART 3: Please tell your Date of Birth or Age in years, and your 10-digit mobile number (e.g. 72 years, 9845012345).",
+          hi: "भाग 3: कृपया अपनी जन्म तिथि या आयु और 10 अंकों का मोबाइल नंबर बताएं।"
+        },
+        why: {
+          kn: "ಭಾಗ 3: ಬಿಎಲ್ಒ ಮನೆ ಭೇಟಿಯ ದಿನಾಂಕ ಮತ್ತು ಪರಿಶೀಲನೆಗೆ ಮೊಬೈಲ್ ಮತ್ತು ವಯಸ್ಸು ಕಡ್ಡಾಯ.",
+          en: "PART 3: Age and mobile number are required for the scheduled BLO doorstep verification.",
+          hi: "भाग 3: बीएलओ के घर सत्यापन के लिए आयु और मोबाइल नंबर आवश्यक है।"
+        },
+        suggestions: {
+          kn: ["15/08/1954 (72 ವರ್ಷ) &bull; 9845012345", "19 ವರ್ಷ &bull; 9448012345", "ರೇಷನ್ ಕಾರ್ಡ್ ಮನೆಯಲ್ಲಿದೆ"],
+          en: ["15/08/1954 (72 years) &bull; 9845012345", "19 years &bull; 9448012345", "Aadhaar Card at home"],
+          hi: ["72 वर्ष &bull; 9845012345", "19 वर्ष (पहला वोट)"]
+        },
+        validate: (input) => {
+          const t = input.trim().toLowerCase();
+          // Check if at least some numbers or words like "years", "ವರ್ಷ", "date", or digits are present
+          const hasDigits = /\d+/.test(t);
+          const hasAgeWords = t.includes("year") || t.includes("ವರ್ಷ") || t.includes("age") || t.includes("ವಯಸ್ಸು") || t.includes("साल");
+          if (!hasDigits && !hasAgeWords) {
+            return {
+              valid: false,
+              reason: {
+                kn: "ಈ ಉತ್ತರದಲ್ಲಿ ವಯಸ್ಸು ಅಥವಾ ದಿನಾಂಕ ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ವಯಸ್ಸು ಅಥವಾ ಹುಟ್ಟಿದ ದಿನಾಂಕ ತಿಳಿಸಿ (ಉದಾಹರಣೆಗೆ: 72 ವರ್ಷ).",
+                en: "We did not detect an age or date. Please speak your age or date of birth (for example: 72 years).",
+                hi: "इसमें आयु या जन्म तिथि नहीं मिली। कृपया अपनी आयु बताएं (उदा. 72 वर्ष)।"
+              }
+            };
+          }
+          return { valid: true };
+        }
+      },
+      {
+        id: 5,
+        part: "FINAL: Read-Back & BLO House Visit",
+        field_name: "Confirmation & Print",
+        prompt: {
+          kn: "ಅಭಿನಂದನೆಗಳು! ನಿಮ್ಮ SIR 2026 ಗಣನಾ ಪ್ರಪತ್ರ ಸಿದ್ಧವಾಗಿದೆ. ಜೂನ್ 30 ರಿಂದ ಆಗಸ್ಟ್ 08 ರ ನಡುವೆ BLO ಮನೆಗೆ ಬಂದಾಗ 1 ಪ್ರತಿಯನ್ನು ನೀಡಿ. ನೀವು ಎಲ್ಲ ವಿವರಗಳನ್ನು ದೃಢೀಕರಿಸಲು ಸಿದ್ಧರಿದ್ದೀರಾ?",
+          en: "Congratulations! Your SIR 2026 Enumeration Form is complete. Submit 1 copy to the BLO during house visits (30th June - 08th August 2026). Do you confirm all information?",
+          hi: "बधाई! आपका प्रपत्र तैयार है। 30 जून से 08 अगस्त के बीच बीएलओ के दौरे पर एक प्रति दें। क्या आप सभी विवरण की पुष्टि करते हैं?"
+        },
+        why: {
+          kn: "ಅಧಿಕೃತ ಸಲ್ಲಿಕೆ: ಚುನಾವಣಾ ಆಯೋಗ ಯಾವುದೇ ಶುಲ್ಕ ವಿಧಿಸುವುದಿಲ್ಲ (100% ಉಚಿತ ಸೇವೆ).",
+          en: "Official rule: ECI does not charge any fee. Keep 1 copy with yourself, 1 copy for the BLO.",
+          hi: "चुनाव आयोग कोई शुल्क नहीं लेता है।"
+        },
+        suggestions: {
+          kn: ["📢 ಸಂಪೂರ್ಣ ನಮೂನೆಯನ್ನು ಓದಿ (Read Aloud)", "✅ ಹೌದು, ಎಲ್ಲವೂ ಸರಿಯಾಗಿದೆ", "🖨️ ಪ್ರಿಂಟ್ ಮಾಡಿ"],
+          en: ["📢 Read Entire Form Aloud", "✅ Yes, All Details Correct", "🖨️ Print EF Form"],
+          hi: ["📢 पूरा फॉर्म पढ़कर सुनाएं", "✅ सभी सही है", "🖨️ प्रिंट करें"]
+        },
+        validate: () => ({ valid: true })
+      }
+    ];
+
+    let chatHistory = [];
+
+    // Initialize Page & Voices
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSpeechSynthesisVoices();
+      initSpeechRecognition();
+      loadStep(1);
+    });
+
+    // Populate and Filter SpeechSynthesis Voices for Kannada, English, Hindi
+    function loadSpeechSynthesisVoices() {
+      if ('speechSynthesis' in window) {
+        AppState.availableVoices = window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => {
+          AppState.availableVoices = window.speechSynthesis.getVoices();
+        };
+      }
+    }
+
+    // Initialize Web Speech Recognition with Robust Handlers
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        AppState.recognition = new SpeechRecognition();
+        AppState.recognition.continuous = false;
+        AppState.recognition.interimResults = true; // Show live interim results so user sees what is heard!
+
+        AppState.recognition.onstart = () => {
+          AppState.isListening = true;
+          document.getElementById('micBtn').classList.add('listening');
+          document.getElementById('voiceOrb').classList.add('listening');
+          document.getElementById('micIndicator').classList.add('active');
+          
+          const listeningText = AppState.lang === 'kn' ? "ಆಲಿಸುತ್ತಿದೆ... ಈಗ ಸ್ಪಷ್ಟವಾಗಿ ಮಾತನಾಡಿ" : (AppState.lang === 'hi' ? "सुन रहा है... कृपया बोलें" : "Listening... Speak naturally now");
+          document.getElementById('micFeedbackText').innerText = `🎙️ ${listeningText}`;
+          document.getElementById('aiStatusText').innerText = `● ${listeningText}`;
+        };
+
+        AppState.recognition.onresult = (event) => {
+          let interimText = '';
+          let finalText = '';
+
+          for (let i = event.results.length - 1; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalText = event.results[i][0].transcript;
+            } else {
+              interimText = event.results[i][0].transcript;
+            }
+          }
+
+          const currentSpoken = finalText || interimText;
+          if (currentSpoken) {
+            document.getElementById('chatInput').value = currentSpoken;
+            document.getElementById('micFeedbackText').innerText = `Heard: "${currentSpoken}"`;
+          }
+        };
+
+        AppState.recognition.onerror = (event) => {
+          console.warn("Recognition error:", event.error);
+          stopMicUI();
+          const errText = AppState.lang === 'kn' ? "ಧ್ವನಿ ಸ್ಪಷ್ಟವಾಗಿ ಕೇಳಿಸಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ." : "Could not catch your voice clearly. Please try again.";
+          document.getElementById('micFeedbackText').innerText = `⚠️ ${errText}`;
+        };
+
+        AppState.recognition.onend = () => {
+          stopMicUI();
+          const spokenText = document.getElementById('chatInput').value.trim();
+          if (spokenText) {
+            processCitizenAnswer(spokenText);
+          }
+        };
+      }
+    }
+
+    function toggleMic() {
+      if (!AppState.recognition) {
+        alert("Web Speech Recognition is not supported by your browser. Please type or use quick chips!");
+        return;
+      }
+      if (AppState.isListening) {
+        AppState.recognition.stop();
+      } else {
+        // Set exact language code based on user selection
+        if (AppState.lang === 'kn') {
+          AppState.recognition.lang = 'kn-IN';
+        } else if (AppState.lang === 'hi') {
+          AppState.recognition.lang = 'hi-IN';
+        } else {
+          AppState.recognition.lang = 'en-IN';
+        }
+        document.getElementById('chatInput').value = '';
+        try {
+          AppState.recognition.start();
+        } catch (e) {
+          console.error("Mic start exception:", e);
+        }
+      }
+    }
+
+    function stopMicUI() {
+      AppState.isListening = false;
+      document.getElementById('micBtn').classList.remove('listening');
+      document.getElementById('voiceOrb').classList.remove('listening');
+      document.getElementById('micIndicator').classList.remove('active');
+      document.getElementById('aiStatusText').innerText = "● Ready for Voice Input";
+    }
+
+    // Load Step and Speak Question in the Chosen Language
+    function loadStep(stepId) {
+      AppState.step = stepId;
+      const s = STEPS_DATA.find(x => x.id === stepId);
+      if (!s) return;
+
+      // Hide any previous warning banner
+      hideRelevanceWarning();
+
+      // Update AI Navigator Visuals
+      document.getElementById('navStagePill').innerText = `Step ${stepId}/5`;
+      const pct = Math.round((stepId / 5) * 100);
+      document.getElementById('radialPercent').innerText = `${pct}%`;
+      document.getElementById('radialIndicator').style.background = `conic-gradient(#FF6B35 0% ${pct}%, rgba(255,255,255,0.1) ${pct}% 100%)`;
+
+      for (let i = 1; i <= 5; i++) {
+        const item = document.getElementById(`navStep_${i}`);
+        const status = document.getElementById(`status_${i}`);
+        if (!item || !status) continue;
+        item.classList.remove('active', 'completed');
+        if (i < stepId) {
+          item.classList.add('completed');
+          status.className = 'part-status status-done';
+          status.innerText = '✓ Done';
+        } else if (i === stepId) {
+          item.classList.add('active');
+          status.className = 'part-status status-act';
+          status.innerText = 'Active';
+        } else {
+          status.className = 'part-status';
+          status.innerText = i === 3 ? 'Safeguard' : 'Pending';
+        }
+      }
+
+      // Prepare AI Message in the Chosen Language
+      const promptText = s.prompt[AppState.lang] || s.prompt['en'];
+      const subText = AppState.lang === 'kn' ? s.prompt['en'] : s.prompt['kn'];
+      const whyText = s.why[AppState.lang] || s.why['en'];
+      const chips = s.suggestions[AppState.lang] || s.suggestions['en'];
+
+      const aiMsg = {
+        role: 'ai',
+        stepId: s.id,
+        part: s.part,
+        content: promptText,
+        subtitle: subText,
+        why: whyText,
+        suggestions: chips
+      };
+
+      chatHistory.push(aiMsg);
+      renderChatStream();
+
+      // Speak aloud in the chosen language!
+      speakInSelectedLanguage(promptText);
+    }
+
+    function renderChatStream() {
+      const container = document.getElementById('chatStream');
+      container.innerHTML = '';
+
+      chatHistory.forEach((msg, idx) => {
+        const row = document.createElement('div');
+        row.className = `chat-row ${msg.role}`;
+
+        if (msg.role === 'ai') {
+          row.innerHTML = `
+            <div class="avatar-icon">🤖</div>
+            <div class="msg-card">
+              <div style="font-size:0.7rem; font-weight:800; color:#60A5FA; text-transform:uppercase;">${msg.part}</div>
+              <div class="msg-content">${msg.content}</div>
+              <div class="msg-vernacular kannada-text">${msg.subtitle}</div>
+
+              <!-- Thought Pill -->
+              <div class="thought-pill" onclick="toggleThought(${idx})">
+                <span>🧠 Saathi AI Semantic Check & ECI Grounding</span>
+                <span>▼</span>
+              </div>
+              <div class="thought-details" id="thought_${idx}">
+                <strong>Grounding:</strong> ${msg.why}<br>
+                <strong>Language Engine:</strong> ${AppState.lang.toUpperCase()} &bull; Relevancy Verification Active
+              </div>
+
+              <div class="msg-actions">
+                <button class="btn-action-small" onclick="speakInSelectedLanguage('${msg.content.replace(/'/g, "\\'")}')">🔊 Listen (${AppState.lang.toUpperCase()})</button>
+                <button class="btn-action-small" onclick="alert('${msg.why.replace(/'/g, "\\'")}')">💡 Why this?</button>
+              </div>
+
+              ${msg.suggestions ? `
+                <div class="chip-wrap">
+                  ${msg.suggestions.map(sg => `<div class="quick-chip" onclick="processCitizenAnswer('${sg.replace(/'/g, "\\'")}')">🗣️ ${sg}</div>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          row.innerHTML = `
+            <div class="avatar-icon">👤</div>
+            <div class="msg-card">
+              <div class="msg-content">${msg.content}</div>
+            </div>
+          `;
+        }
+        container.appendChild(row);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function toggleThought(idx) {
+      const el = document.getElementById(`thought_${idx}`);
+      if (el) el.classList.toggle('open');
+    }
+
+    // Process Citizen Answer with Semantic Relevancy Checking
+    function processCitizenAnswer(text) {
+      if (!text || text.trim() === '') return;
+      const cleanText = text.trim();
+
+      // Check with Semantic Validator of the Current Step
+      const currentStepObj = STEPS_DATA.find(x => x.id === AppState.step);
+      if (currentStepObj && currentStepObj.validate) {
+        const valResult = currentStepObj.validate(cleanText);
+
+        if (!valResult.valid) {
+          // UNRELATED ANSWER DETECTED!
+          const errorMsg = valResult.reason[AppState.lang] || valResult.reason['en'];
+
+          // 1. Show warning banner
+          showRelevanceWarning(errorMsg);
+
+          // 2. Add AI reply warning to chat
+          chatHistory.push({ role: 'user', content: cleanText });
+          chatHistory.push({
+            role: 'ai',
+            stepId: AppState.step,
+            part: '⚠️ Unrelated Answer Detected',
+            content: errorMsg,
+            subtitle: AppState.lang === 'kn' ? valResult.reason['en'] : valResult.reason['kn'],
+            why: "Semantic Guardrail: Answer must match the requested field.",
+            suggestions: currentStepObj.suggestions[AppState.lang]
+          });
+          renderChatStream();
+
+          // 3. Speak the rejection feedback aloud in the CHOSEN language!
+          speakInSelectedLanguage(errorMsg);
+
+          // Clear input and keep on the same step
+          document.getElementById('chatInput').value = '';
+          return;
+        }
+      }
+
+      // IF VALID:
+      hideRelevanceWarning();
+      chatHistory.push({ role: 'user', content: cleanText });
+      renderChatStream();
+      document.getElementById('chatInput').value = '';
+
+      // Update Form State & Document based on Step
+      if (AppState.step === 1) {
+        AppState.draft.name = cleanText;
+        document.getElementById('docPart1Name').innerText = cleanText;
+        document.getElementById('docSignature').innerText = cleanText.split(' ')[0];
+      } else if (AppState.step === 2) {
+        if (cleanText.includes("No") || cleanText.includes("ಇಲ್ಲ") || cleanText.includes("Not in Old")) {
+          document.getElementById('docPart2AName').innerText = "Not Found in Prev SIR";
+          document.getElementById('docPart2AEPIC').innerText = "N/A";
+          document.getElementById('docPart2ABox').style.opacity = '0.6';
+        } else {
+          document.getElementById('docPart2AName').innerText = AppState.draft.name;
+          document.getElementById('docPart2AEPIC').innerText = "ABC1234567";
+        }
+      } else if (AppState.step === 3) {
+        if (cleanText.includes("Not Available") || cleanText.includes("ಲಭ್ಯವಿಲ್ಲ") || cleanText.includes("Skip")) {
+          document.getElementById('docPart2BAncestor').innerText = "Not Linked (Part 3 Direct)";
+          document.getElementById('docPart2BEPIC').innerText = "N/A";
+          document.getElementById('docPart2BStatus').innerText = "Part 3 Fallback";
+          document.getElementById('docPart2BStatus').style.color = "#FF6B35";
+        }
+      } else if (AppState.step === 4) {
+        document.getElementById('docPart3DOB').innerText = "15/08/1954 (Age: 72 yrs)";
+        document.getElementById('docPart3Mobile').innerText = "9845012345";
+      }
+
+      // Progress to Next Step
+      setTimeout(() => {
+        if (AppState.step < STEPS_DATA.length) {
+          loadStep(AppState.step + 1);
+        } else {
+          speakDraftAloud();
+        }
+      }, 700);
+    }
+
+    function sendInput() {
+      const input = document.getElementById('chatInput');
+      const val = input.value.trim();
+      if (val) {
+        processCitizenAnswer(val);
+      }
+    }
+
+    function jumpTo(stepId) { loadStep(stepId); }
+
+    // Speech Output in Respective Chosen Language
+    function speakInSelectedLanguage(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel(); // Stop any overlapping audio
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.88; // Slower, calm rate for elderly citizens
+
+      if (AppState.lang === 'kn') {
+        utterance.lang = 'kn-IN';
+        // Try finding a dedicated Kannada voice if available
+        const knVoice = AppState.availableVoices.find(v => v.lang === 'kn-IN' || v.lang.startsWith('kn') || v.name.toLowerCase().includes('kannada') || v.name.toLowerCase().includes('sapna'));
+        if (knVoice) utterance.voice = knVoice;
+      } else if (AppState.lang === 'hi') {
+        utterance.lang = 'hi-IN';
+        const hiVoice = AppState.availableVoices.find(v => v.lang === 'hi-IN' || v.lang.startsWith('hi') || v.name.toLowerCase().includes('hindi') || v.name.toLowerCase().includes('kalpana'));
+        if (hiVoice) utterance.voice = hiVoice;
+      } else {
+        utterance.lang = 'en-IN';
+        const enVoice = AppState.availableVoices.find(v => v.lang === 'en-IN' || v.name.toLowerCase().includes('india') || v.lang.startsWith('en'));
+        if (enVoice) utterance.voice = enVoice;
+      }
+
+      const orb = document.getElementById('voiceOrb');
+      utterance.onstart = () => orb.classList.add('speaking');
+      utterance.onend = () => orb.classList.remove('speaking');
+      utterance.onerror = () => orb.classList.remove('speaking');
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCurrentQuestion() {
+      const s = STEPS_DATA.find(x => x.id === AppState.step);
+      if (s) {
+        const text = s.prompt[AppState.lang] || s.prompt['en'];
+        speakInSelectedLanguage(text);
+      }
+    }
+
+    function explainWhyThisField() {
+      const s = STEPS_DATA.find(x => x.id === AppState.step);
+      if (s) {
+        const text = s.why[AppState.lang] || s.why['en'];
+        speakInSelectedLanguage(text);
+        alert(`💡 Saathi AI Guidance:\n\n${text}`);
+      }
+    }
+
+    function speakDraftAloud() {
+      const d = AppState.draft;
+      let text = "";
+      if (AppState.lang === 'kn') {
+        text = `ದಯವಿಟ್ಟು ನಿಮ್ಮ ಗಣನಾ ಪ್ರಪತ್ರದ ಸಾರಾಂಶವನ್ನು ಗಮನಿಸಿ. ಮತದಾರರ ಹೆಸರು: ${d.name}. ಭಾಗ 1 ಮತದಾರರ ಗುರುತು ದೃಢೀಕರಿಸಲಾಗಿದೆ. ಭಾಗ 2 ಮತ್ತು 3 ರ ವಿವರಗಳನ್ನು ದಾಖಲಿಸಲಾಗಿದೆ. ಜೂನ್ 30 ರಿಂದ ಆಗಸ್ಟ್ 08 ರ ನಡುವೆ BLO ಮನೆಗೆ ಬಂದಾಗ 1 ಪ್ರತಿಯನ್ನು ನೀಡಿ.`;
+      } else if (AppState.lang === 'hi') {
+        text = `कृपया अपने गणना प्रपत्र का सारांश सुनें। मतदाता का नाम: ${d.name}। भाग 1, 2 और 3 का विवरण दर्ज कर लिया गया है। 30 जून से 08 अगस्त के बीच बीएलओ के दौरे पर एक प्रति दें।`;
+      } else {
+        text = `Please listen to your completed Enumeration Form EF summary. Elector Name: ${d.name}. Part 1, 2, and 3 entries have been drafted. Submit 1 copy to the BLO during house visits between 30th June and 08th August 2026.`;
+      }
+      speakInSelectedLanguage(text);
+    }
+
+    function switchLanguage(l) {
+      AppState.lang = l;
+      document.getElementById('langKnBtn').classList.toggle('active', l === 'kn');
+      document.getElementById('langEnBtn').classList.toggle('active', l === 'en');
+      document.getElementById('langHiBtn').classList.toggle('active', l === 'hi');
+
+      const codeMap = { kn: 'kn-IN (Kannada)', en: 'en-IN (English)', hi: 'hi-IN (Hindi)' };
+      document.getElementById('activeLangCode').innerText = `Voice: ${codeMap[l]}`;
+
+      const confirmMsg = l === 'kn' ? "ಕನ್ನಡ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ." : (l === 'hi' ? "हिन्दी भाषा का चयन किया गया है।" : "English language selected.");
+      speakInSelectedLanguage(confirmMsg);
+
+      // Re-read current step prompt in the newly selected language!
+      setTimeout(() => {
+        speakCurrentQuestion();
+      }, 1000);
+    }
+
+    function showRelevanceWarning(msg) {
+      const banner = document.getElementById('relevanceBanner');
+      banner.style.display = 'block';
+      banner.innerHTML = `<strong>⚠️ Unrelated Voice Input:</strong> ${msg}`;
+    }
+
+    function hideRelevanceWarning() {
+      const banner = document.getElementById('relevanceBanner');
+      banner.style.display = 'none';
+    }
+
+    // Quick Simulator triggers
+    function runSimulator(type) {
+      if (type === 'lakshmi') {
+        processCitizenAnswer("ಲಕ್ಷ್ಮಿ ದೇವಿ (Lakshmi Devi)");
+      } else if (type === 'unrelated') {
+        // Simulates an unrelated voice answer like asking about the weather!
+        processCitizenAnswer("Today the weather is very hot, what is the temperature?");
+      } else if (type === 'fallback') {
+        loadStep(2);
+        processCitizenAnswer("No / Not in Old SIR (ಹಿಂದಿನ ಪಟ್ಟಿಯಲ್ಲಿಲ್ಲ)");
+      }
+    }
+
+    function toggleContrast() { document.body.classList.toggle('high-contrast'); }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    }
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+  </script>
+
+  <!-- ==================== MODAL 1: NEO4J KNOWLEDGE GRAPH ==================== -->
+  <div id="graphModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.2); border-radius:18px; max-width:850px; width:100%; max-height:85vh; overflow-y:auto; padding:24px; position:relative; box-shadow:0 25px 50px rgba(0,0,0,0.8);">
+      <button onclick="closeModal('graphModal')" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.1); border:none; color:white; width:32px; height:32px; border-radius:50%; font-size:18px; cursor:pointer;">&times;</button>
+      <h3 style="color:#60A5FA; margin-bottom:6px;">🧠 Neo4j Knowledge Graph Architecture</h3>
+      <p style="color:#94A3B8; font-size:0.85rem; margin-bottom:14px;">Grounded Cypher schema connecting Form Parts, Fields, Validation Rules, and Multilingual Explanations.</p>
+
+      <svg width="100%" height="260" style="background:#030712; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+        <circle cx="100" cy="60" r="28" fill="#3B82F6" />
+        <text x="100" y="65" fill="white" font-size="10" text-anchor="middle" font-weight="bold">SIR EF 2026</text>
+
+        <line x1="128" y1="60" x2="240" y2="60" stroke="#475569" stroke-width="2" />
+        <circle cx="260" cy="60" r="20" fill="#FF6B35" />
+        <text x="260" y="64" fill="white" font-size="9" text-anchor="middle">PART 1</text>
+
+        <line x1="260" y1="80" x2="260" y2="130" stroke="#475569" stroke-width="2" />
+        <circle cx="260" cy="150" r="20" fill="#FF6B35" />
+        <text x="260" y="154" fill="white" font-size="9" text-anchor="middle">PART 2A</text>
+
+        <line x1="260" y1="170" x2="260" y2="220" stroke="#475569" stroke-width="2" />
+        <circle cx="260" cy="235" r="16" fill="#F59E0B" />
+        <text x="260" y="238" fill="white" font-size="7" text-anchor="middle">PART 2B</text>
+
+        <line x1="280" y1="150" x2="420" y2="150" stroke="#475569" stroke-width="2" />
+        <circle cx="440" cy="150" r="22" fill="#10B981" />
+        <text x="440" y="154" fill="white" font-size="9" text-anchor="middle">RPA 1950</text>
+
+        <line x1="462" y1="150" x2="590" y2="150" stroke="#475569" stroke-width="2" />
+        <circle cx="610" cy="150" r="20" fill="#8B5CF6" />
+        <text x="610" y="154" fill="white" font-size="8" text-anchor="middle">Kannada</text>
+
+        <line x1="440" y1="172" x2="440" y2="215" stroke="#475569" stroke-width="2" />
+        <circle cx="440" cy="230" r="16" fill="#EF4444" />
+        <text x="440" y="233" fill="white" font-size="7" text-anchor="middle">Never Guess</text>
+      </svg>
+
+      <div style="margin-top:12px; background:#030712; padding:12px; border-radius:8px; font-family:'JetBrains Mono'; font-size:0.75rem; color:#38BDF8;">
+        MATCH (p:FormPart)-[:HAS_FIELD]->(f:FormField)<br>
+        -[:EXPLAINED_BY]->(g:OfficialGuidance)-[:AVAILABLE_IN]->(l:LanguageExplanation {lang: 'kn'})<br>
+        RETURN p.name, f.label, g.legal_basis, l.plain_speech;
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: BLO REVIEW QUEUE ==================== -->
+  <div id="bloModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.2); border-radius:18px; max-width:850px; width:100%; max-height:85vh; overflow-y:auto; padding:24px; position:relative;">
+      <button onclick="closeModal('bloModal')" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.1); border:none; color:white; width:32px; height:32px; border-radius:50%; font-size:18px; cursor:pointer;">&times;</button>
+      <h3 style="color:#FF8A50; margin-bottom:6px;">👮‍♂️ Booth Level Officer (BLO) Review Dashboard</h3>
+      <p style="color:#94A3B8; font-size:0.85rem; margin-bottom:14px;">Polling Station: 142 &bull; Scheduled Doorstep Visits: 30th June to 08th August 2026</p>
+
+      <table style="width:100%; border-collapse:collapse; font-size:0.85rem; color:#F8FAFC;">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.2); color:#94A3B8; text-align:left;">
+            <th style="padding:10px;">Ref ID</th>
+            <th>Citizen Name</th>
+            <th>Age / Category</th>
+            <th>Previous Roll</th>
+            <th>Action Required</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(255,107,53,0.08);">
+            <td style="padding:10px; font-weight:bold;">#SIR-89412</td>
+            <td>Lakshmi Devi</td>
+            <td>72 yrs <span style="background:#EF4444; color:white; font-size:0.68rem; padding:2px 6px; border-radius:8px;">Elder Priority</span></td>
+            <td>Part 3 Fallback</td>
+            <td>Doorstep Visit & Physical Verification</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:10px; font-weight:bold;">#SIR-89410</td>
+            <td>Ramesh Gowda</td>
+            <td>19 yrs <span style="background:#10B981; color:white; font-size:0.68rem; padding:2px 6px; border-radius:8px;">New Voter</span></td>
+            <td>None (First Time)</td>
+            <td>Birth Proof Verification</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 3: LEAFLET VIEWER ==================== -->
+  <div id="leafletModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.2); border-radius:18px; max-width:720px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; position:relative;">
+      <button onclick="closeModal('leafletModal')" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.1); border:none; color:white; width:32px; height:32px; border-radius:50%; font-size:18px; cursor:pointer;">&times;</button>
+      <h3 style="color:#60A5FA; margin-bottom:6px;">Official ECI Reference Flyer</h3>
+      <p style="color:#94A3B8; font-size:0.85rem; margin-bottom:12px;">Special Intensive Revision (SIR) 2026 &bull; Enumeration Form (EF) Guidelines</p>
+      <img src="assets/official_sir_enumeration_form_2026.png" style="width:100%; border-radius:10px; border:1px solid rgba(255,255,255,0.2);" alt="Official Leaflet" />
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 4: PITCH & TRUST PRINCIPLES ==================== -->
+  <div id="pitchModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.2); border-radius:18px; max-width:760px; width:100%; max-height:85vh; overflow-y:auto; padding:24px; position:relative;">
+      <button onclick="closeModal('pitchModal')" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.1); border:none; color:white; width:32px; height:32px; border-radius:50%; font-size:18px; cursor:pointer;">&times;</button>
+      <h3 style="color:#34D399; margin-bottom:8px;">🎤 Suggested Hackathon Presentation Pitch</h3>
+      <blockquote style="border-left:4px solid #34D399; padding-left:14px; font-style:italic; color:#CBD5E1; margin-bottom:16px; font-size:0.95rem; line-height:1.6;">
+        "SIR Saathi AI is a voice-first, multilingual assistant that helps elderly and low-literacy citizens complete an SIR form more confidently. Instead of navigating a complex form, the citizen answers one question at a time. The assistant fills a draft, explains fields using a Neo4j knowledge graph of verified guidance, checks for missing information, and reads the answers back for confirmation. Our goal is to make digital form assistance more accessible while keeping the citizen in control and leaving official decisions to authorized election officials."
+      </blockquote>
+
+      <h4 style="color:#93C5FD; margin-bottom:6px;">🛡️ Core Safety, Privacy & Trust Guardrails:</h4>
+      <ul style="color:#CBD5E1; font-size:0.85rem; line-height:1.6; margin-left:18px;">
+        <li><strong>Never Guess Rule:</strong> If old EPIC is unknown, the AI never guesses; it safely directs to Part 3 as per official ECI instructions.</li>
+        <li><strong>Zero Automated Voter Eligibility Decisions:</strong> Eligibility decisions remain 100% human-verified by authorized ECI officers.</li>
+        <li><strong>Citizen Read-Back Authority:</strong> Draft is read aloud in Kannada, English, or Hindi before any submission.</li>
+        <li><strong>Zero Fees:</strong> ECI never charges fees for electoral revision.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
